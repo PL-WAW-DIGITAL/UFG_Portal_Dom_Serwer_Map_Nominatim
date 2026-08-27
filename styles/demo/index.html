@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8">
+  <title>Portal DOM — test lokalnych kafelków</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://unpkg.com/maplibre-gl@4/dist/maplibre-gl.css" rel="stylesheet">
+  <script src="https://unpkg.com/maplibre-gl@4/dist/maplibre-gl.js"></script>
+  <style>
+    body { margin: 0; font-family: system-ui, sans-serif; }
+    #map { width: 100vw; height: 100vh; }
+    .controls {
+      position: absolute; top: 10px; left: 10px; z-index: 1;
+      background: white; padding: 10px 14px; border-radius: 6px;
+      box-shadow: 0 2px 6px rgba(0,0,0,.2);
+      max-width: min(420px, calc(100vw - 24px));
+    }
+    .controls label { display: block; font-size: 14px; }
+    select { margin-top: 6px; width: 100%; max-width: 360px; }
+    .hint {
+      margin: 8px 0 0;
+      font-size: 12px;
+      color: #555;
+      line-height: 1.35;
+    }
+  </style>
+</head>
+<body>
+  <div class="controls">
+    <label>Styl bazowy:
+      <select id="style-select">
+        <optgroup label="Bazowe">
+          <option value="../style_carto_positron.json" selected>
+            Carto Positron (OpenMapTiles → lokalny Martin)
+          </option>
+          <option value="../style_versatiles_colorful.json">
+            Versatiles Colorful (Shortbread → CDN)
+          </option>
+        </optgroup>
+        <optgroup label="Legacy POC">
+          <option value="../portal-light.json">Portal Light (uproszczony)</option>
+          <option value="../portal-dark.json">Portal Dark (uproszczony)</option>
+        </optgroup>
+      </select>
+    </label>
+    <p class="hint" id="style-hint"></p>
+  </div>
+  <div id="map"></div>
+  <script>
+    const hints = {
+      '../style_carto_positron.json':
+        'Bazowy jasny. Kafelki: localhost:8081 (OpenMapTiles). Sprites/glyphs: CARTO CDN.',
+      '../style_versatiles_colorful.json':
+        'Bazowy kolorowy. Schemat Shortbread — lokalny Planetiler tego nie serwuje; tiles z CDN Versatiles.',
+      '../portal-light.json':
+        'Uproszczony styl POC (OpenMapTiles / lokalny Martin).',
+      '../portal-dark.json':
+        'Uproszczony styl ciemny POC (OpenMapTiles / lokalny Martin).'
+    };
+
+    const select = document.getElementById('style-select');
+    const hintEl = document.getElementById('style-hint');
+
+    function setHint(url) {
+      hintEl.textContent = hints[url] || '';
+    }
+
+    const initial = select.value;
+    setHint(initial);
+
+    const map = new maplibregl.Map({
+      container: 'map',
+      style: initial,
+      center: [19.145, 52.237],
+      zoom: 6
+    });
+    map.addControl(new maplibregl.NavigationControl());
+
+    select.addEventListener('change', (e) => {
+      const url = e.target.value;
+      setHint(url);
+      map.setStyle(url);
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,75 @@
+services:
+  nominatim:
+    image: mediagis/nominatim:5.1
+    container_name: nominatim
+    restart: unless-stopped
+    shm_size: 4g
+    # Not published - traffic goes through nginx-cache :8080
+    expose:
+      - "8080"
+    environment:
+      # Filtered PBF (place+highway+admin) — no POI. Full poland-latest.osm.pbf stays for Planetiler.
+      # Do not set PBF_URL together with PBF_PATH.
+      PBF_PATH: ${NOMINATIM_PBF_PATH:-/data/pbf/poland-filtered.osm.pbf}
+      REPLICATION_URL: ${REPLICATION_URL:-https://download.geofabrik.de/europe/poland-updates/}
+      IMPORT_STYLE: ${IMPORT_STYLE:-street}
+      NOMINATIM_PASSWORD: ${NOMINATIM_PASSWORD:-changeme}
+      POSTGRES_SHARED_BUFFERS: ${POSTGRES_SHARED_BUFFERS:-2GB}
+      POSTGRES_MAINTENANCE_WORK_MEM: ${POSTGRES_MAINTENANCE_WORK_MEM:-4GB}
+      POSTGRES_EFFECTIVE_CACHE_SIZE: ${POSTGRES_EFFECTIVE_CACHE_SIZE:-8GB}
+    volumes:
+      # Nominatim 5.1 uses PostgreSQL 16
+      - nominatim-data:/var/lib/postgresql/16/main
+      - nominatim-flatnode:/nominatim/flatnode
+      - ./data/pbf:/data/pbf:ro
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/status"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 3600s
+
+  martin:
+    image: ghcr.io/maplibre/martin:latest
+    container_name: martin
+    restart: unless-stopped
+    command: --config /config/martin.yaml
+    expose:
+      - "3000"
+    volumes:
+      - ./data/tiles:/tiles:ro
+      - ./tiles/martin/martin.yaml:/config/martin.yaml:ro
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://127.0.0.1:3000/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  nginx-cache:
+    image: nginx:1.27-alpine
+    container_name: nginx-cache
+    restart: unless-stopped
+    ports:
+      - "${NOMINATIM_PORT:-8080}:8080"
+      - "${NGINX_CACHE_PORT:-8081}:80"
+    volumes:
+      - ./tiles/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    tmpfs:
+      - /var/cache/nginx/nominatim:size=512m,mode=1777
+      - /var/cache/nginx/tiles:size=2048m,mode=1777
+    depends_on:
+      martin:
+        condition: service_healthy
+      nominatim:
+        condition: service_started
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --spider http://127.0.0.1:8080/health && wget -q --spider http://127.0.0.1/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+
+volumes:
+  nominatim-data:
+  nominatim-flatnode:

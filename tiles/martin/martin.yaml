@@ -1,0 +1,24 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/maplibre/martin/main/schemas/config.json
+# Martin Tile Server - large in-process cache (L1), nginx is L2
+
+web_ui: disable
+
+keep_alive: 75
+
+cache:
+  size_mb: 1024
+  expiry: 24h
+  idle_timeout: 2h
+  tile_size_mb: 768
+
+cors:
+  origin:
+    - "*"
+
+preferred_encoding: gzip
+
+pmtiles:
+  paths:
+    - /tiles
+  directory_cache:
+    size_mb: 256

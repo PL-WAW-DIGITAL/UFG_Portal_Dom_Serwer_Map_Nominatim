@@ -1,0 +1,110 @@
+# Mapowanie warstw — style bazowe Portal DOM
+# Źródło prawdy kafelków lokalnych: Planetiler → OpenMapTiles → Martin (:8081)
+
+# Style bazowe (produkcyjne / demo)
+base_styles:
+  - id: carto-positron
+    file: style_carto_positron.json
+    schema: openmaptiles
+    tiles: local-martin   # http://localhost:8081/poland.json
+    sprites_glyphs: carto-cdn
+    role: "Bazowy jasny (Positron)"
+
+  - id: versatiles-colorful
+    file: style_versatiles_colorful.json
+    schema: shortbread
+    tiles: versatiles-cdn  # wymaga Shortbread; lokalny Planetiler = OpenMapTiles
+    sprites_glyphs: versatiles-cdn
+    role: "Bazowy kolorowy"
+    blocker: "Do pełnej lokalizacji potrzebny tileset Shortbread (osobny job Planetiler/Shortbread)."
+
+# Legacy POC (uproszczone)
+legacy_styles:
+  - file: portal-light.json
+  - file: portal-dark.json
+
+# OpenMapTiles (Planetiler domyślny + Carto Positron)
+layer_mapping_openmaptiles:
+  - osm: "transportation"
+    style: "road / transportation*"
+    notes: "Główna warstwa dróg"
+
+  - osm: "transportation_name"
+    style: "road-label / transportation_name*"
+    notes: "Etykiety ulic"
+
+  - osm: "landuse"
+    style: "landuse*"
+
+  - osm: "landcover"
+    style: "landcover*"
+
+  - osm: "park"
+    style: "park*"
+
+  - osm: "building"
+    style: "building*"
+
+  - osm: "water"
+    style: "water*"
+
+  - osm: "waterway"
+    style: "waterway*"
+
+  - osm: "water_name"
+    style: "water-label*"
+
+  - osm: "boundary"
+    style: "boundary*"
+
+  - osm: "place"
+    style: "place*"
+
+  - osm: "poi"
+    style: "poi*"
+
+  - osm: "aeroway"
+    style: "aeroway*"
+
+  - osm: "housenumber"
+    style: "housenumber*"
+
+# Shortbread (Versatiles Colorful) — inny schemat niż OpenMapTiles
+layer_mapping_shortbread:
+  - shortbread: "streets / street_polygons / street_labels / bridges"
+    openmaptiles_approx: "transportation / transportation_name"
+  - shortbread: "buildings"
+    openmaptiles_approx: "building"
+  - shortbread: "land / sites"
+    openmaptiles_approx: "landuse / landcover / park"
+  - shortbread: "ocean / water_polygons / water_lines"
+    openmaptiles_approx: "water / waterway"
+  - shortbread: "boundaries / boundary_labels"
+    openmaptiles_approx: "boundary"
+  - shortbread: "place_labels"
+    openmaptiles_approx: "place"
+  - shortbread: "pois / public_transport"
+    openmaptiles_approx: "poi"
+
+# Źródło kafelków lokalnych (OpenMapTiles)
+tile_source:
+  type: vector
+  url: "http://localhost:8081/poland.json"
+  # Produkcja: https://tiles.portal-dom.example/poland.json
+
+# Zasoby statyczne
+resources:
+  carto_positron:
+    glyphs: "https://tiles.basemaps.cartocdn.com/fonts/{fontstack}/{range}.pbf"
+    sprite: "https://tiles.basemaps.cartocdn.com/gl/positron-gl-style/sprite"
+  versatiles_colorful:
+    glyphs: "https://tiles.versatiles.org/assets/glyphs/{fontstack}/{range}.pbf"
+    sprite: "https://tiles.versatiles.org/assets/sprites/basics/sprites"
+  # Produkcja: zmirroruj glyphs/sprites lokalnie (CDN lub repo Portal DOM)
+
+adaptation_checklist:
+  - "Carto Positron: source → localhost:8081/poland.json (zrobione)"
+  - "Versatiles Colorful: albo Shortbread PMTiles lokalnie, albo tymczasowo CDN"
+  - "Zmirroruj sprites/glyphs offline przed produkcją"
+  - "Przetestuj zoom 5-18 w styles/demo/index.html"
+  - "Usuń lub archiwizuj portal-light/dark po akceptacji stylów bazowych"

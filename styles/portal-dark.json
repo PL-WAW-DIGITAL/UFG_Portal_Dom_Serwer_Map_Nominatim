@@ -1,0 +1,127 @@
+{
+  "version": 8,
+  "name": "Portal DOM Dark",
+  "metadata": {
+    "description": "Ciemny styl mapy Portal DOM — lokalne kafelki OpenMapTiles",
+    "portal-dom": {
+      "variant": "dark",
+      "tileServer": "local-martin"
+    }
+  },
+  "sources": {
+    "poland": {
+      "type": "vector",
+      "url": "http://localhost:8081/poland.json",
+      "attribution": "© OpenStreetMap contributors"
+    }
+  },
+  "sprite": "https://demotiles.maplibre.org/styles/osm-bright/sprite",
+  "glyphs": "https://demotiles.maplibre.org/font/{fontstack}/{range}.pbf",
+  "layers": [
+    {
+      "id": "background",
+      "type": "background",
+      "paint": { "background-color": "#1a1a2e" }
+    },
+    {
+      "id": "water",
+      "type": "fill",
+      "source": "poland",
+      "source-layer": "water",
+      "paint": { "fill-color": "#162447" }
+    },
+    {
+      "id": "landuse-residential",
+      "type": "fill",
+      "source": "poland",
+      "source-layer": "landuse",
+      "filter": ["==", ["get", "class"], "residential"],
+      "paint": { "fill-color": "#2d2d44", "fill-opacity": 0.5 }
+    },
+    {
+      "id": "landuse-green",
+      "type": "fill",
+      "source": "poland",
+      "source-layer": "landuse",
+      "filter": ["in", ["get", "class"], ["literal", ["park", "grass", "forest", "meadow"]]],
+      "paint": { "fill-color": "#1b4332", "fill-opacity": 0.6 }
+    },
+    {
+      "id": "park",
+      "type": "fill",
+      "source": "poland",
+      "source-layer": "park",
+      "paint": { "fill-color": "#2d6a4f", "fill-opacity": 0.7 }
+    },
+    {
+      "id": "building",
+      "type": "fill",
+      "source": "poland",
+      "source-layer": "building",
+      "minzoom": 13,
+      "paint": { "fill-color": "#3d3d5c", "fill-opacity": 0.8 }
+    },
+    {
+      "id": "road-minor",
+      "type": "line",
+      "source": "poland",
+      "source-layer": "transportation",
+      "filter": ["in", ["get", "class"], ["literal", ["minor", "service", "track"]]],
+      "paint": { "line-color": "#4a4a6a", "line-width": 1 }
+    },
+    {
+      "id": "road-secondary",
+      "type": "line",
+      "source": "poland",
+      "source-layer": "transportation",
+      "filter": ["in", ["get", "class"], ["literal", ["secondary", "tertiary"]]],
+      "paint": { "line-color": "#5a5a7a", "line-width": 2 }
+    },
+    {
+      "id": "road-primary",
+      "type": "line",
+      "source": "poland",
+      "source-layer": "transportation",
+      "filter": ["in", ["get", "class"], ["literal", ["primary", "trunk"]]],
+      "paint": { "line-color": "#78716c", "line-width": 3 }
+    },
+    {
+      "id": "road-motorway",
+      "type": "line",
+      "source": "poland",
+      "source-layer": "transportation",
+      "filter": ["==", ["get", "class"], "motorway"],
+      "paint": { "line-color": "#991b1b", "line-width": 4 }
+    },
+    {
+      "id": "road-label",
+      "type": "symbol",
+      "source": "poland",
+      "source-layer": "transportation_name",
+      "minzoom": 13,
+      "layout": {
+        "text-field": ["get", "name"],
+        "text-font": ["Open Sans Regular"],
+        "text-size": 11,
+        "symbol-placement": "line"
+      },
+      "paint": {
+        "text-color": "#d1d5db",
+        "text-halo-color": "#1a1a2e",
+        "text-halo-width": 1
+      }
+    },
+    {
+      "id": "boundary",
+      "type": "line",
+      "source": "poland",
+      "source-layer": "boundary",
+      "filter": ["==", ["get", "admin_level"], 4],
+      "paint": {
+        "line-color": "#6b7280",
+        "line-width": 1,
+        "line-dasharray": [4, 2]
+      }
+    }
+  ]
+}

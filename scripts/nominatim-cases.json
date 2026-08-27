@@ -1,0 +1,30 @@
+[
+  {
+    "name": "City: Gdansk",
+    "query": "city=Gdansk&state=pomorskie&featuretype=settlement&format=json&limit=1"
+  },
+  {
+    "name": "Street: Gdansk Zielona",
+    "query": "street=Zielona&city=Gdansk&state=pomorskie&featuretype=street&format=json&limit=1"
+  },
+  {
+    "name": "City: Warszawa",
+    "query": "city=Warszawa&state=mazowieckie&featuretype=settlement&format=json&limit=1"
+  },
+  {
+    "name": "City: Krakow",
+    "query": "city=Krakow&state=malopolskie&featuretype=settlement&format=json&limit=1"
+  },
+  {
+    "name": "City: Tomaszow Mazowiecki",
+    "query": "city=Tomasz%C3%B3w%20Mazowiecki&state=lodzkie&featuretype=settlement&format=json&limit=1"
+  },
+  {
+    "name": "City: Brzezia Laka",
+    "query": "city=Brzezia%20%C5%81%C4%85ka&state=dolnoslaskie&featuretype=settlement&format=json&limit=1"
+  },
+  {
+    "name": "Street: Czarnuszokwa",
+    "query": "street=Czarnuszkowa&featuretype=settlement&format=json&limit=1"
+  }
+]
